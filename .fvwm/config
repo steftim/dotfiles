@@ -1,0 +1,457 @@
+# FVWM2 config by ILUXA (Intended to use with Vertex GTK theme by horst3180)
+
+# Set X session environment variables
+#SetEnv PATH '/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin:$[HOME]/.local/bin'
+#SetEnv LANG en_US.UTF-8
+
+# Set terminal emulator (xterm/rxvt) and edit command.
+# Eg:	SetEnv terminal xterm
+SetEnv edit geany
+SetEnv terminal uxrvt
+#SetEnv edit '$[terminal] -T vim -e vim'
+
+ImagePath $[FVWM_USERDIR]/buttons:+/appicons
+Read $[FVWM_USERDIR]/autostart
+Read $[FVWM_USERDIR]/menu
+Read $[FVWM_USERDIR]/.XDGMenu
+
+ClickTime 250
+IgnoreModifiers L25
+DesktopSize 1x1
+Emulate Mwm
+HideGeometryWindow Always
+OpaqueMoveSize unlimited
+MoveThreshold 6
+DefaultLayers 2 4 4
+EwmhBaseStruts 30 0 30 0
+# Uncomment to never cover dock with windows
+DefaultFont 'xft:Droid Sans:size=10'
+DefaultColors #FFFFFF #2F343F
+# Icon color
+Colorset 0 bg #2F343F, fg white
+# Icon title color
+Colorset 1 bg black, fg white
+# Highlighted icon title color
+Colorset 2 bg #4986FB, fg white
+# Dock Color
+Colorset 123 bg #F22F343F, fg white
+ColorSet 144 RootTransparent Buffer, Tint #2F343F 90, fg white, bg #2F343F
+
+# Default styles
+Style * !Icons
+Style * !Icon
+Style * !IconBox
+Style * !MiniIcon
+Style * !StickyIcon
+Style * HilightIconTitleColorset 2
+Style * ClickToFocus
+Style * FPFocusClickButtons 1
+Style * FPSortWindowlistByFocus
+Style * FPIgnoreRaiseClickMotion
+Style * !FPReleaseFocus
+Style * WindowShadeSteps 10p
+Style * ResizeOpaque
+Style * MwmFunctions
+Style * MwmDecor
+Style * OLDecor
+Style * FvwmBorder
+Style * !StippledTitle
+Style * MinOverlapPlacement
+Style * DecorateTransient
+Style * StackTransientParent
+Style * EWMHUseStackingOrderHints
+Style * BorderWidth 2, HandleWidth 2
+Style * SnapAttraction 5 All ScreenAll
+Style * IconFont 'xft:Droid Sans:size=9'
+Style * Font 'xft:Droid Sans:size=10'
+Style * ForeColor #A9A9A9, BackColor #2F343F
+Style * HilightFore #FFFFFF, HilightBack #2F343F
+
+# Default cursor types
+CursorStyle ROOT left_ptr
+CursorStyle TITLE left_ptr
+CursorStyle DEFAULT left_ptr
+CursorStyle SYS left_ptr
+CursorStyle MENU left_ptr
+CursorStyle WAIT left_ptr
+
+# Menu appearance
+MenuStyle * Fvwm
+MenuStyle * TrianglesSolid
+MenuStyle * PopupImmediately
+MenuStyle * Hilight3DOff
+MenuStyle * SeparatorsLong
+MenuStyle * PopupIgnore
+MenuStyle * BorderWidth 1
+MenuStyle * PopupOffset 0 100
+MenuStyle * VerticalMargins 13 13
+MenuStyle * VerticalItemSpacing 3 4
+MenuStyle * VerticalTitleSpacing 0 4
+MenuStyle * Foreground #FFFFFF, Background #2F343F
+MenuStyle * ActiveFore #FFFFFF, HilightBack #4986FB
+MenuStyle * Font 'xft:Droid Sans:size=10'
+MenuStyle * TitleFont 'xft:Droid Sans:size=10:bold'
+
+# Titles and borders
+TitleStyle ActiveUp solid #2F343F -- Flat
+TitleStyle ActiveDown solid #2F343F -- Flat
+#TitleStyle Inactive solid #F -- Flat
+TitleStyle Inactive solid #2F343F -- Flat
+TitleStyle Centered Height 24
+BorderStyle Inactive -- HiddenHandles NoInset
+BorderStyle Active -- HiddenHandles NoInset
+
+# Close button
+ButtonStyle 1 ActiveUp Pixmap close-active.png -- Flat
+ButtonStyle 1 ActiveDown Pixmap close-pressed.png -- Flat
+ButtonStyle 1 Inactive Pixmap close-inactive.png -- Flat
+# Iconify button
+ButtonStyle 4 ActiveUp Pixmap hide-active.png -- Flat
+ButtonStyle 4 ActiveDown Pixmap hide-pressed.png -- Flat
+ButtonStyle 4 Inactive Pixmap hide-inactive.png -- Flat
+# Maxmimize button
+ButtonStyle 2 ActiveUp Pixmap maximize-active.png -- Flat
+ButtonStyle 2 ActiveDown Pixmap maximize-pressed.png -- Flat
+ButtonStyle 2 Inactive Pixmap maximize-inactive.png -- Flat
+ButtonStyle 2 ToggledActiveUp Pixmap maximize-toggled-active.png -- Flat
+ButtonStyle 2 ToggledActiveDown Pixmap maximize-toggled-pressed.png -- Flat
+ButtonStyle 2 ToggledInactive Pixmap maximize-toggled-inactive.png -- Flat
+
+######################################## FUNCTIONS
+# FVWM start function
+AddToFunc StartFunction
+#	+ I Module FvwmBanner
+	+ I Module FvwmCommandS
+	+ I Module FvwmButtons Dock
+	+ I Module FvwmEvent FirstEvent
+	+ I Module FvwmEvent SecondEvent
+	#+ I Module FvwmButtons Buttop
+	#+ I Module FvwmPager desk
+# Titlebar buttons click actions
+AddToFunc CloseButton
+	+ C Close
+AddToFunc IconifyButton
++ I ThisWindow (Shaded) WindowShade
+	+ C Iconify
+AddToFunc MaximizeButton
+	+ C Maximize
+# Maximize window to left half of screen
+AddToFunc TileLeft
+	+ I ThisWindow (!Shaded, !Iconic) Maximize true 50 100
+# Maximize window to right half of screen
+AddToFunc TileRight
+	+ I ThisWindow (!Shaded, !Iconic) Maximize true 50 100
+	+ I ThisWindow (Maximized, !Shaded, !Iconic) Move -0 0
+# Maximize window to upper half of screen
+AddToFunc TileUp
+	+ I ThisWindow (!Shaded, !Iconic) Maximize true 100 50
+# Maximize window to bottom half of screen
+AddToFunc TileDown
+	+ I ThisWindow (!Shaded, !Iconic) Maximize true 100 50
+	+ I ThisWindow (Maximized, !Shaded, !Iconic) Move 0 -0
+# Focus and Raise
+AddToFunc RaiseFocus
+	+ I Raise
+	+ I Focus
+# Send focus
+AddToFunc TransferFocus
+	+ I Prev (CurrentDesk, AcceptsFocus, !Iconic, !Overlapped) Focus
+	+ I TestRc (!Match) All Reverse UseStack (CurrentDesk, AcceptsFocus, !Iconic) Focus
+# Disable 6th Layer and/or lower window
+AddToFunc LowerTo4
+	+ I Layer 0 4
+	+ I Lower
+# Unmaximize when move
+AddToFunc MoveOption
+	+ I Maximize false
+	+ I WarpToWindow 50 50
+	+ I Focus
+	+ I Move
+# If focused window is iconic, show IconMenu, otherwise show WindowMenu
+AddToFunc ShowOptions
+	+ I ThisWindow (Iconic) Menu IconMenu mouse 0p 0p
+	+ I TestRc (!Match) Menu WindowMenu mouse 0p 0p
+# Resize dragging
+AddToFunc BorderResize
+	+ M ThisWindow Resize
+# Lower, move and unmaximize if maximized
+AddToFunc MoveLower
+	+ I LowerTo4
+	+ M ThisWindow (Maximized) Maximize false
+	+ M TestRc (Match) WarpToWindow !raise 50 1
+	+ M Move
+# Move and unmaximize if maximized or maximize/unmaximize with double click
+AddToFunc MaximizeOrMove
+	+ I Raise
+	+ I Focus
+	+ D Maximize
+	+ M ThisWindow (Maximized) Maximize false
+	+ M TestRc (Match) WarpToWindow 50 1
+	+ M Move
+# Raise, focus and move window
+AddToFunc RaiseMove
+	+ I Raise
+	+ I Focus
+	+ M ThisWindow (Maximized) Maximize false
+	+ M TestRc (Match) WarpToWindow 50 50
+	+ M Move
+# Raise and focus when resize
+AddToFunc RaiseResize
+	+ M Raise
+	+ M Focus
+	+ M Resize direction automatic
+# Change WindowList function
+DestroyFunc WindowListFunc
+AddToFunc WindowListFunc
+	+ I FlipFocus
+	+ I Iconify false
+	+ I Raise
+# Lower Dock and icons even if dock is on top layer
+AddToFunc LowerDock
+	+ I All (Dock) LowerTo4
+	+ I All (Iconic) Lower
+# Raise Dock and icons
+AddToFunc RaiseDock
+	+ I All (Dock) Layer 0 6
+	+ I All (Iconic) Raise
+# Toggle dock layer and raise/lower icons simultaneously
+AddToFunc ToggleDockLayer
+	+ I All (Dock, Layer 4) Layer 0 6
+	+ I TestRc (!Match) All (Dock) LowerTo4
+	+ I All (Dock, Layer 4) All (Iconic) Lower
+	+ I All (Dock, Layer 6) All (Iconic) Raise
+# Show desktop/restore function
+AddToFunc ShowDesktop
+	+ I All Reverse UseStack (CurrentDesk, State 0) Iconify false
+	+ I TestRc (!Match) ShowDesktopIconify
+AddToFunc ShowDesktopIconify
+	+ I All UseStack (CurrentDesk, Iconifiable, !Iconic) State 0 True
+	+ I All UseStack (CurrentDesk, Iconifiable, !Iconic) Iconify True
+# Drop-down function
+AddToFunc DropDown
+	+ I None ($1, CurrentDesk) Exec exec $0
+	+ I All ($1, Focused, !Maximized) ResizeMove $2 $3 $4 $5
+	+ I All ($1, CurrentDesk, Iconic) Iconify false
+	+ I TestRc (!Match) All ($1, !Focused) Raise
+	+ I TestRc (!Match) All ($1) Iconify true
+	+ I All ($1) FlipFocus
+
+######################################## BINDINGS
+#Keyname	Context	Modifiers	Function					Description#
+# Titlebar buttons
+Mouse 1		1	A		CloseButton					#Close titlebar button left click
+Mouse 1		4	A		IconifyButton					#Iconify titlebar button left click
+Mouse 1		2	A		MaximizeButton					#Maximize titlebar button left click
+Mouse 2		1	A		Destroy						#Close titlebar button middle click 
+# Titlebar and borders
+Mouse 1		T	A		MaximizeOrMove					#Titlebar double click/dragging
+Mouse 4		T	A		WindowShade true				#Titlebar wheel up
+Mouse 5		T	A		WindowShade false				#Titlebar wheel down
+Mouse 3		T	A		Menu WindowMenu mouse 0p 0p			#Titlebar right click
+Mouse 1		T	4		MoveLower					#Super+titlebar left click
+Mouse 1		SF	N		BorderResize					#Border dragging
+Mouse 3		SF	N		Menu WindowMenu mouse 0p 0p			#Border right click
+# Window
+Mouse 1		WSF	4		RaiseMove					#Super+window left click
+Mouse 3		WSF	4		RaiseResize					#Super+window right click
+Mouse 2		IWSF	4		ShowOptions					#Super+window/icon middle click
+# Icon
+Mouse 3		I	A		Menu IconMenu mouse 0p 0p			#Right icon click
+Mouse 1		I	A		Iconify false					#Left icon click
+Mouse 1		I	4		RaiseFocus					#Super+left icon click
+Mouse 2		I	N		Close						#Middle icon click
+# Root window
+Mouse 1		R	A		Nop						#Desktop left click
+Mouse 1		R	A		Menu RootMenu mouse 0p 0p			#Desktop right click
+Mouse 2		RD	N WindowList m 0p 0p, NoIcons, CurrentDesk, MaxLabelWidth 50	#Middle desktop click
+# Other key combinations
+Key R		A	C4		Restart						#Ctrl+Super+R
+Key D		A	CM		ShowDesktop					#Ctrl+Alt+D
+Key Space	A	4		ShowOptions					#Super+Space
+Key Escape	A	4		Menu RootMenu					#Super+Escape
+Key F1		A	4		GotoDesk 0 0					#Super+F1
+Key F2		A	4		GotoDesk 0 1					#Super+F2
+Key F3		A	4		GotoDesk 0 2					#Super+F3
+Key F4		A	4		GotoDesk 0 3					#Super+F4
+Key Page_Up	A	4		Desk -1 0 0 3					#Super+Page Up
+Key Page_Down	A	4		Desk +1 0 0 3					#Super+Page Down
+Key 1		A	4		ThisWindow MoveToDesk 0 0			#Super+1
+Key 2		A	4		ThisWindow MoveToDesk 0 1			#Super+2
+Key 3		A	4		ThisWindow MoveToDesk 0 2			#Super+3
+Key 4		A	4		ThisWindow MoveToDesk 0 3			#Super+4
+Key F2		A	M		Exec exec dmenu_run				#Alt+F2
+Key Up		A	4		TileUp						#Super+Up
+Key Down	A	4		TileDown					#Super+Down
+Key Left	A	4		TileLeft					#Super+Left
+Key Right	A	4		TileRight					#Super+Right
+Key Q		A	4		ThisWindow Close				#Super+Q
+Key A		A	4		ThisWindow Iconify				#Super+A
+Key W		A	4		ThisWindow (!Iconic) Maximize			#Super+W
+Key S		A	4		ThisWindow RaiseLower				#Super+S
+Key D		A	4		ToggleDockLayer					#Super+D
+Key K           A       4               ThisWindow Destroy				#Super+K
+Key M		A	4		ThisWindow Move					#Super+M
+Key T		A	4		ThisWindow Layer 0 6				#Super+T
+Key L		A	4		ThisWindow Layer 0 4				#Super+L
+Key R		A	4		ThisWindow Resize direction SE warptoborder	#Super+R
+Key H		A	4		ThisWindow WindowShade				#Super+H
+Key P		A	4		Menu XDGMenu					#Super+P
+Key O		A	4		Menu OptionsMenu				#Super+O
+Key Tab		A	4		Next (Iconic, !drop_down_term) RaiseFocus	#Super+TAB
+Key Tab		A	S4		Prev (Iconic, !drop_down_term) RaiseFocus	#Super+Shift+TAB
+Key Tab		A	C		Next (CurrentDesk, !Iconic, !FvwmIdent) RaiseFocus #Ctrl+TAB
+Key Tab		A	SC		Prev (CurrentDesk, !Iconic, !FvwmIdent) RaiseFocus #Ctrl+Shift+TAB
+# Alt+TAB
+Key Up		M	M		MenuMoveCursor -1				#up/down when
+Key Down	M	M		MenuMoveCursor +1				#using alt+tab
+Key Tab		A	M		WindowList Root c c NoCurrentDeskTitle, IconifiedAtEnd, MaxLabelWidth 100
+# Application keybindings
+Key X		A	CM		Exec exec xkill					#Ctrl+Alt+x
+Key L		A	CM		Exec exec xscreensaver-command -lock		#Ctrl+Alt+l
+Key T		A	C4		Exec exec transset -t 0.85			#Ctrl+Super+t
+Key X		A	C4		Exec exec xcalc					#Ctrl+Super+x
+Key C		A	C4		Exec exec gcolor2				#Ctrl+Super+c
+Key Escape	A	C		Exec exec $[terminal] -e htop			#Ctrl+Escape
+#Key Print	A	S		Exec exec gnome-screenshot -d 3 -p		#Shift+Print
+#Key Print	A	4		Exec exec gnome-screenshot -w -b -p -e shadow	#Super+Print
+#Key Print	A	C		Exec exec gnome-screenshot -a			#Ctrl+Print
+Key	Print	A	A		Exec xfce4-screenshooter -s ~/screens
+Key	D		A	C		Exec dmenu_run
+Key T		A	CM		Exec termite
+# Volume control (media keys) FreeBSD
+#Key XF86AudioRaiseVolume A A		Exec exec mixer vol +7
+#Key XF86AudioLowerVolume A A		Exec exec mixer vol -7
+# Volume control (media keys) Linux
+Key XF86AudioRaiseVolume A A		Exec exec amixer sset Master 7%+ unmute
+Key XF86AudioLowerVolume A A		Exec exec amixer sset Master 7%- unmute
+# Lock key
+Key XF86ScreenSaver A A			Exec exec xscreensaver-command -lock
+# Drop-down apps
+# Usage: DropDown 'app_command -flags' app_class width(p) height(p) position_x(p) position_y(p)
+Key F1		A	N		DropDown '$[terminal] -name drop_down_term -geometry 185x33' drop_down_term 100 61 0 0
+
+######################################## MODULES
+# Banner
+#*FvwmBanner: NoDecor
+#*FvwmBanner: Pixmap Logo.png
+#*FvwmBanner: Timeout 1
+
+# Identify app
+*FvwmIdent: Font 'xft:Droid Sans:size=10'
+*FvwmIdent: Fore white
+*FvwmIdent: Back #454749
+*FvwmIdent: MinimalLayer 6
+
+
+
+# Quit dialog
+*FvwmFormDefault: Font 'xft:Droid Sans:bold:size=10'
+*FvwmFormDefault: ButtonFont 'xft:Droid Sans:size=10'
+*FvwmFormDefault: Fore white
+*FvwmFormDefault: Back #454749
+*FvwmFormDefault: ItemFore white
+*FvwmFormDefault: ItemBack #454749
+*FvwmForm-Quit: GrabServer
+*FvwmForm-Quit: WarpPointer
+*FvwmForm-Quit: PadVText 10
+*FvwmForm-Quit: Command Beep
+*FvwmForm-Quit: Text "Please, select operation:"
+*FvwmForm-Quit: Line center
+*FvwmForm-Quit: Button quit "Shutdown" ^S
+*FvwmForm-Quit: Command Exec exec shutdown now
+*FvwmForm-Quit: Button quit "Reboot" ^R
+*FvwmForm-Quit: Command Exec exec reboot
+*FvwmForm-Quit: Button quit "Logout" ^L
+*FvwmForm-Quit: Command Quit
+*FvwmForm-Quit: Button quit "Cancel" ^[
+*FvwmForm-Quit: Command Nop
+
+ Dock
+*Dock: Rows 4
+*Dock: Columns 1
+*Dock: Padding 0 0
+*Dock: Colorset 0
+*Dock: Geometry 256x44-0-0
+*Dock: (3x3, Frame 0, Swallow(NoClose) DockPager 'Module FvwmPager DockPager 0 3')
+
+ Dock pager
+*DockPager: Rows 1
+*DockPager: Columns 4
+*DockPager: Font none
+#*DockPager: Back #262626
+#*DockPager: Hilight #4986FB
+*DockPager: WindowBorderWidth 0
+*DockPager: UseSkipList
+*DockPager: MiniIcons
+*DockPager: Balloons
+*DockPager: BalloonFont 'xft:Droid Sans:size=8'
+#*DockPager: BalloonBack black
+#*DockPager: BalloonFore white
+*DockPager: BalloonYOffset -1
+*DockPager: BalloonStringFormat %i
+*DockPager: Colorset * 0
+
+
+
+# FvwmEvent (add actions to events)
+# Switch focus when switch desk or iconify/close window
+*FirstEvent: iconify TransferFocus
+*FirstEvent: destroy_window TransferFocus
+*FirstEvent: new_desk 'All Reverse UseStack (CurrentDesk, AcceptsFocus, !Iconic) Focus'
+# Focus popup windows placed by some apps
+*FirstEvent: add_window 'ThisWindow (AcceptsFocus, !Focused) Focus'
+# Rearrange icons when deiconify or close
+*FirstEvent: deiconify 'All (CurrentDesk, Iconic) PlaceAgain Icon'
+*SecondEvent: destroy_window 'ThisWindow (Iconic) All (CurrentDesk, Iconic) PlaceAgain Icon'
+# Part of 'ShowDesktop' function
+*SecondEvent: add_window 'All (CurrentDesk) State 0 false'
+*SecondEvent: deiconify 'All (CurrentDesk) State 0 false'
+
+######################################## STYLES
+# Apps
+#Style pcmanfm StaysPut, StaysOnBottom
+Style desktop_window EWMHIgnoreStackingOrderHints, StaysOnBottom
+Style panel EWMHIgnoreStackingOrderHints, FixedPosition, !Closable, !Title
+Style conky !Maximizable, !Iconifiable, !Closable, !Title, FixedSize, FixedPosition,\
+	Sticky, NeverFocus, StaysOnBottom, WindowListSkip, CirculateSkip, NeverFocus
+#Style URxvt ResizeHintOverride
+#Style XTerm ResizeHintOverride
+#Style rxvt UseStyle URxvt
+Style Vncviewer !Title, PositionPlacement 0 0
+Style Xephyr UseStyle Vncviewer
+Style Gcolor2 !Button 5, !Maximizable
+Style Wmclockmon-cal !UsePPosition, PositionPlacement -0 0, TitleFormat Calendar
+Style Zenity PositionPlacement Center, FixedUSSize, !Maximizable, !Button 5
+#Style Chromium NoPPosition
+Style Audacious !Maximizable
+Style NoClass !Borders, !Title
+Style openttd !Borders, !Title, EWMHMaximizeIgnoreWorkingArea
+# Fix wine games focus
+Style *.exe Lenience
+# Modules
+Style FvwmIdent WindowListSkip, NeverFocus, !Title
+Style FvwmForm WindowListSkip, !Title
+Style Dock !Maximizable, !Iconifiable, !Title, !Borders,\
+	Sticky, NeverFocus, WindowListSkip, CirculateSkip,\
+	FixedSize, FixedPosition, !Closable, \
+	NoHandles, BorderWidth 0
+Style fvwm_menu !Maximizable, !Button 3, !Button 5, Lenience, UsePPosition
+Style drop_down_term !Title, !Borders, !Icon, WindowListSkip, Sticky, !Closable,\
+	EWMHMaximizeIgnoreWorkingArea, PositionPlacement 0 0, !ResizeHintOverride
+	
+	
+#meine confih
+#Style * TitleAtLeft
+#Style * !Title
+Style Polybar* !Title, FixedSize, WindowListSkip, !Borders, !Handles
+Style stalonetray* !title, WindowListSkip, !Borders, !Handles
+Style "Discord Updater" !title, !Borders, !Handles
+Style *qmmp* !title, !Borders, !Handles
+Style *Qmmp* !title, !Borders, !Handles
+Style Plank !title, !Borders, !Handles, StaysOnTop
+Style plank !title, !Borders, !Handles, StaysOnTop
+Style ulauncher !title, !Borders, !Handles, StaysOnTop
+Style tint2 !title, !Borders, !Handles
+Style *steam* !title, !Borders, !Handles
+Style steam !title, !Borders, !Handles
+Style Steam !title, !Borders, !Handles

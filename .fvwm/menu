@@ -1,0 +1,77 @@
+######################################## Window options menu
+AddToMenu WindowMenu
++ &Lower%down.png% LowerTo4
++ "on &Top"%up.png% Layer 0 6
++ "" Nop
++ I&conify%iconify.png% Iconify true
++ "Toggle Ma&ximize"%maximize.png% Maximize
++ "" Nop
++ Mo&ve%move.png% MoveOption
++ &Resize%resize.png% Resize direction SE warptoborder
++ "" Nop
++ "&Sticky across Desks"%stick.png% Stick
++ "&Move to ..."%forward.png% Popup MoveTo
++ "" Nop
++ &Focus%focus.png% FlipFocus
++ &Identify%identify.png% FvwmIdent
++ "" Nop
++ &Destroy%destroy.png% Popup ConfirmDestroy
++ &Quit%close.png% Close
+# 'Move to' popup menu
+AddToMenu MoveTo
++ "  Desk &1 " MoveToDesk 0 0
++ "  Desk &2 " MoveToDesk 0 1
++ "  Desk &3 " MoveToDesk 0 2
++ "  Desk &4 " MoveToDesk 0 3
+# 'Destroy' popup menu
+AddToMenu ConfirmDestroy
++ Ca&ncel%cancel.png% Nop
++ &Destroy%ok.png% Destroy
+
+######################################## Icon options menu
+AddToMenu IconMenu
++ &Quit%close.png% Close
++ "" Nop
++ &Identify%identify.png% FvwmIdent
++ "" Nop
++ Dei&conify%window.png% Iconify false
++ "" Nop
++ &Layer%layer.png% Popup Layer
++ "" Nop
++ &Destroy%destroy.png% Popup ConfirmDestroy
+AddtoMenu Layer
++ "on &Top"%up.png% Layer 0 6
++ &Lower%down.png% LowerTo4
+
+######################################## Root menu
+AddToMenu RootMenu FVWM Title
+Test (X dmenu_run) + &Run%play.png% Exec exec dmenu_run
+Test (X dmenu_run) + "" Nop
++ &Identify%identify.png% FvwmIdent
+Test (X xkill) + "" Nop
+Test (X xkill) + &Destroy%close.png% Exec exec xkill
++ "" Nop
++ &Console%window.png% FvwmConsole -terminal $[terminal] -bg black -fg green
+Test (F $[FVWM_USERDIR]/.XDGMenu) + "" Nop
+Test (F $[FVWM_USERDIR]/.XDGMenu) + &XDGMenu%list.png% Popup XDGMenu
++ "" Nop
++ &Options%settings.png% Popup OptionsMenu
++ "" Nop
++ &Quit...%shutdown.png% Module FvwmForm FvwmForm-Quit
++ "" Nop
+Test (X google-chrome) + &chrome Exec exec google-chrome
+
+
+######################################## Options menu
+AddToMenu OptionsMenu "Version: $[version.num]" Title
+Test (X xscreensaver-command) + &Lock%lock.png% Exec exec xscreensaver-command -lock
++ &Restart%refresh.png% Restart
++ "" Nop
++ "Edit &Autostart"%star.png% Exec exec $[edit] $[FVWM_USERDIR]/autostart 
++ "Edit &Config"%settings.png% Exec exec $[edit] $[FVWM_USERDIR]/config
++ "Edit &Menus"%list.png% Exec exec $[edit] $[FVWM_USERDIR]/menu
++ "" Nop
++ "&Dock Layer"%layer.png% Popup DockLayer
+AddToMenu DockLayer
++ "on &Top"%up.png% All (FvwmButtons) Layer 0 6
++ &Lower%down.png% All (FvwmButtons) LowerTo4

@@ -1,0 +1,27 @@
+\AddToFunc InitFunction
+# Change keyboard layout to your layout. Use caps to switch to 1 layout, shift+caps to switch to second layout
+	+ I Exec exec setxkbmap -layout us,ru,ua -option "grp:alt_shift_toggle,grp_led:caps,compose:ralt,terminate:ctrl_alt_bksp"
+	#+ I Test Exec exec polybar top &
+	+ I Test Exec exec conky &
+	+ I Test Exec exec conky -c /home/steftim/.conkyrc_time &
+	+ I Exec exec xrdb -merge ~/.Xresources
+	#+ I Test Exec exec feh --bg-fill /home/steftim/wallpaper/Wallpaper.jpg &
+	+ I Test Exec exec feh --bg-fill /home/steftim/wallpaper/Wallpaper.jpg &
+	#+ I Exec exec pcmanfm --desktop
+	+ I Test Exec exec compton -b --backend xrender &
+	+ I Test Exec exec tint2 -c ~/.config/tint2/tint2-0rc.tint2rc &
+	+ I Test Exec exec tint2 -c ~/.config/tint2/tint2-1rc.tint2rc &
+	+ I Exec exec clipit -n -d
+	#+ I Exec exec xbanish
+	+ I Exec exec xscreensaver -nosplash
+# Tray applications. Test if installed and launch with 3s delay
+	#+ I Test (X sbxkb) Exec exec sh -c "sleep 3 && sbxkb"
+	+ I Test (X volumeicon) Exec exec sh -c "sleep 3 && volumeicon"
+	+ I Test (X gxkb) Exec exec sh -c "sleep 3 && gxkb"
+	+ I Test (X pasystray) Exec exec sh -c "sleep 3 && pasystray"
+	+ I Test (X nm-applet) Exec exec sh -c "sleep 3 && nm-applet"
+AddToFunc ExitFunction
+           + I Test (ToRestart) Beep
+AddToFunc RestartFunction
+	#+ I Exec exec pkill stalonetray
+
