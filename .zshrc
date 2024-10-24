@@ -1645,21 +1645,6 @@ bind2maps emacs viins vicmd -- -s '\e'${key[Left]}  backward-word
 zrcautoload zmv
 zrcautoload zed
 
-# we don't want to quote/espace URLs on our own...
-# if autoload -U url-quote-magic ; then
-#    zle -N self-insert url-quote-magic
-#    zstyle ':url-quote-magic:*' url-metas '*?[]^()~#{}='
-# else
-#    print 'Notice: no url-quote-magic available :('
-# fi
-if is51 ; then
-  # url-quote doesn't work without bracketed-paste-magic since Zsh 5.1
-  alias url-quote='autoload -U bracketed-paste-magic url-quote-magic;
-                   zle -N bracketed-paste bracketed-paste-magic; zle -N self-insert url-quote-magic'
-else
-  alias url-quote='autoload -U url-quote-magic ; zle -N self-insert url-quote-magic'
-fi
-
 #m# k ESC-h Call \kbd{run-help} for the 1st word on the command line
 alias run-help >&/dev/null && unalias run-help
 for rh in run-help{,-git,-ip,-openssl,-p4,-sudo,-svk,-svn}; do
@@ -2671,17 +2656,6 @@ if [[ "$TERM" != dumb ]]; then
     alias ls="command ls ${ls_options:+${ls_options[*]}}"
     #a1# List all files, with colors (\kbd{ls -la \ldots})
     alias la="command ls -la ${ls_options:+${ls_options[*]}}"
-    #a1# List files with long colored list, without dotfiles (\kbd{ls -l \ldots})
-    alias ll="command ls -l ${ls_options:+${ls_options[*]}}"
-    #a1# List files with long colored list, human readable sizes (\kbd{ls -hAl \ldots})
-    alias lh="command ls -hAl ${ls_options:+${ls_options[*]}}"
-    #a1# List files with long colored list, append qualifier to filenames (\kbd{ls -l \ldots})\\&\quad(\kbd{/} for directories, \kbd{@} for symlinks ...)
-    alias l="command ls -l ${ls_options:+${ls_options[*]}}"
-else
-    alias la='command ls -la'
-    alias ll='command ls -l'
-    alias lh='command ls -hAl'
-    alias l='command ls -l'
 fi
 
 # use ip from iproute2 with color support
@@ -2689,9 +2663,9 @@ if ip -color=auto addr show dev lo >/dev/null 2>&1; then
     alias ip='command ip -color=auto'
 fi
 
-if [[ -r /proc/mdstat ]]; then
-    alias mdstat='cat /proc/mdstat'
-fi
+# if [[ -r /proc/mdstat ]]; then
+#     alias mdstat='cat /proc/mdstat'
+# fi
 
 alias ...='cd ../../'
 
@@ -2699,10 +2673,6 @@ alias ...='cd ../../'
 if [[ -x /sbin/kexec ]] && [[ -r /proc/cmdline ]] ; then
     alias "$(uname -r)-reboot"="kexec -l --initrd=/boot/initrd.img-"$(uname -r)" --command-line=\"$(cat /proc/cmdline)\" /boot/vmlinuz-"$(uname -r)""
 fi
-
-# see http://www.cl.cam.ac.uk/~mgk25/unicode.html#term for details
-alias term2iso="echo 'Setting terminal to iso mode' ; print -n '\e%@'"
-alias term2utf="echo 'Setting terminal to utf-8 mode'; print -n '\e%G'"
 
 # make sure it is not assigned yet
 [[ -n ${aliases[utf2iso]} ]] && unalias utf2iso
@@ -2843,22 +2813,6 @@ if [[ -r /etc/debian_version ]] ; then
 
 fi
 
-# use /var/log/syslog iff present, fallback to journalctl otherwise
-if [ -e /var/log/syslog ] ; then
-  #a1# Take a look at the syslog: \kbd{\$PAGER /var/log/syslog || journalctl}
-  salias llog="$PAGER /var/log/syslog"     # take a look at the syslog
-  #a1# Take a look at the syslog: \kbd{tail -f /var/log/syslog || journalctl}
-  salias tlog="tail --follow=name /var/log/syslog"    # follow the syslog
-elif check_com -c journalctl ; then
-  salias llog="journalctl"
-  salias tlog="journalctl -f"
-fi
-
-# sort installed Debian-packages by size
-if check_com -c dpkg-query ; then
-    #a3# List installed Debian-packages sorted by size
-    alias debs-by-size="dpkg-query -Wf 'x \${Installed-Size} \${Package} \${Status}\n' | sed -ne '/^x  /d' -e '/^x \(.*\) install ok installed$/s//\1/p' | sort -nr"
-fi
 
 # if cdrecord is a symlink (to wodim) or isn't present at all warn:
 if [[ -L /usr/bin/cdrecord ]] || ! check_com -c cdrecord; then
@@ -3332,44 +3286,12 @@ esac
 # aliases
 
 # general
-#a2# Execute \kbd{du -sch}
-[[ -n "$GRML_NO_SMALL_ALIASES" ]] || alias da='du -sch'
 
 # listing stuff
 #a2# Execute \kbd{ls -lSrah}
 alias dir="command ls -lSrah"
-#a2# Only show dot-directories
-alias lad='command ls -d .*(/)'
-#a2# Only show dot-files
-alias lsa='command ls -a .*(.)'
-#a2# Only files with setgid/setuid/sticky flag
-alias lss='command ls -l *(s,S,t)'
-#a2# Only show symlinks
-alias lsl='command ls -l *(@)'
-#a2# Display only executables
-alias lsx='command ls -l *(*)'
-#a2# Display world-{readable,writable,executable} files
-alias lsw='command ls -ld *(R,W,X.^ND/)'
-#a2# Display the ten biggest files
-alias lsbig="command ls -flh *(.OL[1,10])"
-#a2# Only show directories
-alias lsd='command ls -d *(/)'
-#a2# Only show empty directories
-alias lse='command ls -d *(/^F)'
-#a2# Display the ten newest files
-alias lsnew="command ls -rtlh *(D.om[1,10])"
-#a2# Display the ten oldest files
-alias lsold="command ls -rtlh *(D.Om[1,10])"
-#a2# Display the ten smallest files
-alias lssmall="command ls -Srl *(.oL[1,10])"
-#a2# Display the ten newest directories and ten newest .directories
-alias lsnewdir="command ls -rthdl *(/om[1,10]) .*(D/om[1,10])"
-#a2# Display the ten oldest directories and ten oldest .directories
-alias lsolddir="command ls -rthdl *(/Om[1,10]) .*(D/Om[1,10])"
 
 # some useful aliases
-#a2# Remove current empty directory. Execute \kbd{cd ..; rmdir \$OLDCWD}
-alias rmcdir='cd ..; rmdir $OLDPWD || cd $OLDPWD'
 
 #a2# ssh with StrictHostKeyChecking=no \\&\quad and UserKnownHostsFile unset
 alias insecssh='ssh -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null"'
@@ -3735,7 +3657,7 @@ function _simple_extract () {
         '*:Archive Or Uri:__archive_or_uri'
 }
 compdef _simple_extract simple-extract
-[[ -n "$GRML_NO_SMALL_ALIASES" ]] || alias se=simple-extract
+# [[ -n "$GRML_NO_SMALL_ALIASES" ]] || alias se=simple-extract
 
 #f5# Change the xterm title from within GNU-screen
 function xtrename () {
@@ -3950,14 +3872,18 @@ unfunction grml_status_feature
 ### example: split functions-search 8,16,24,32
 #@# split functions-search 8
 
-[ -z "$NVM_DIR" ] && export NVM_DIR="$HOME/.nvm"
-source /usr/share/nvm/nvm.sh
-source /usr/share/nvm/bash_completion
-source /usr/share/nvm/install-nvm-exec
+#[ -z "$NVM_DIR" ] && export NVM_DIR="$HOME/.nvm"
+#source /usr/share/nvm/nvm.sh
+#source /usr/share/nvm/bash_completion
+#source /usr/share/nvm/install-nvm-exec
 
 export GPG_TTY=$(tty)
 export EDITOR=nano
-export PATH=$PATH:/home/steftim/proj/gcc-arm-10.3-2021.07-x86_64-aarch64-none-linux-gnu/bin:/home/steftim/.spicetify
+
+## fix yarn bug with latest kernel "/usr/bin/env: ‘node’: Text file busy"
+export UV_USE_IO_URING=0
+
+alias tf=terraform
 
 ## END OF FILE #################################################################
 # vim:filetype=zsh foldmethod=marker autoindent expandtab shiftwidth=4

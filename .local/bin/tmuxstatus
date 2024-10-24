@@ -12,14 +12,22 @@ FULL=▓
 EMPTY=░
 EOL=▒ 
 SIZE=7
-C0="#000000"
-C1="#222222"
-C2="#1C596E"
+# Temp 50-
+C0="#ffabab"
+# Temp 50+ | Front fg
+C1="#e8e8e8"
+# 
+C2="#ffffff"
+# Temp 75+
 C3="#B3291C"
-C4="#3A3A3A"
-C5="#efefef"
-C6="#878787"
-C7="#8787af"
+# Time fg
+C4="#4d4d4d"
+# Time fg
+C5="#ffffff"
+# Date fg
+C6="#ffffff"
+# Front bg
+C7="#4d4d4d"
 
 draw()
 {
